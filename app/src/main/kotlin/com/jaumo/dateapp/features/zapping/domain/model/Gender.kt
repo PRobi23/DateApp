@@ -35,6 +35,9 @@ fun Gender.getPreposition(): UiText {
     }
 }
 
+/***
+ * Make gender from string.
+ */
 fun String.toGender(): Gender {
     return if (this == "female") {
         Gender.FEMALE
