@@ -1,14 +1,21 @@
 package com.jaumo.dateapp.core.di
 
+import android.content.Context
 import com.jaumo.dateapp.BuildConfig
+import com.jaumo.dateapp.MainActivity
 import com.jaumo.dateapp.core.analytics.Analytics
 import com.jaumo.dateapp.core.analytics.AnalyticsImpl
+import com.jaumo.dateapp.features.filter.data.local.sharedpreferences.SharedPreferencesUtils
+import com.jaumo.dateapp.features.filter.data.local.sharedpreferences.SharedPreferencesUtilsImplementation
+import com.jaumo.dateapp.features.filter.data.repository.FilterRepositoryImpl
+import com.jaumo.dateapp.features.filter.domain.repository.FilterRepository
 import com.jaumo.dateapp.features.zapping.data.remote.UserApi
 import com.jaumo.dateapp.features.zapping.data.repository.UserRepositoryImpl
 import com.jaumo.dateapp.features.zapping.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -44,12 +51,29 @@ object DateAppModule {
 
     @Provides
     @Singleton
+    fun provideSharedPreferencesUtils(@ApplicationContext appContext: Context): SharedPreferencesUtils =
+        SharedPreferencesUtilsImplementation(
+            context = appContext
+        )
+
+    @Provides
+    @Singleton
     fun provideUserRepository(
         userApi: UserApi,
         analytics: Analytics,
         @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
     ): UserRepository = UserRepositoryImpl(
         userApi, analytics, defaultDispatcher
+    )
+
+    @Provides
+    @Singleton
+    fun provideFilterRepository(
+        sharedPreferencesUtils: SharedPreferencesUtils,
+        analytics: Analytics,
+        @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
+    ): FilterRepository = FilterRepositoryImpl(
+        sharedPreferencesUtils, analytics, defaultDispatcher
     )
 
     @Provides

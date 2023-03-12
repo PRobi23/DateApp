@@ -1,6 +1,7 @@
 package com.jaumo.dateapp.features.zapping.domain.repository
 
 import com.jaumo.dateapp.core.util.Response
+import com.jaumo.dateapp.features.zapping.domain.model.Gender
 import com.jaumo.dateapp.features.zapping.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
@@ -14,5 +15,5 @@ interface UserRepository {
      * user is emitted if it fails then error is propagated.
      * @return Single user from User API
      */
-    fun getUser(): Flow<Response<User>>
+    fun getUser(gender: Gender): Flow<Response<User>>
 }

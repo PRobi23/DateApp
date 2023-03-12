@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,15 +45,6 @@ internal fun ZappingScreen(
                     text = stringResource(id = R.string.zapping_screen_title),
                     style = MaterialTheme.typography.subtitle2
                 )
-            }, actions = {
-                IconButton(onClick = {
-                    onNavigate(UiEvent.Navigate(Route.ZAPPING))
-                }) {
-                    Icon(
-                        Icons.Default.Info,
-                        contentDescription = "Filter",
-                    )
-                }
             })
         }
     ) { padding ->
@@ -95,7 +84,8 @@ internal fun ZappingScreen(
                         .fillMaxSize()
                         .background(Color.White),
                     user = userToShow,
-                    getNewUser = viewModel::getUser
+                    getNewUser = viewModel::getUser,
+                    onNavigate = onNavigate
                 )
             }
             if (state.error != null) {
@@ -122,7 +112,7 @@ internal fun ZappingScreen(
 @Preview
 @Composable
 private fun ZappingScreenPreview() {
-    ZappingScreen(onNavigate = { UiEvent.Navigate(Route.ZAPPING) },
+    ZappingScreen(onNavigate = { UiEvent.Navigate(Route.FILTER) },
         viewModel = object : ZappingViewModel {
 
             override val state: StateFlow<UserState> = MutableStateFlow(

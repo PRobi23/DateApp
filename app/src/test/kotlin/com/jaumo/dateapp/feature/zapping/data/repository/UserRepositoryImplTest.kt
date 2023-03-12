@@ -1,4 +1,4 @@
-package com.jaumo.dateapp.feature.zapping.domain.repository
+package com.jaumo.dateapp.feature.zapping.data.repository
 
 import com.google.common.truth.Truth
 import com.jaumo.dateapp.UserGenerator
@@ -9,6 +9,7 @@ import com.jaumo.dateapp.features.zapping.data.remote.UserApi
 import com.jaumo.dateapp.features.zapping.data.repository.UserRepositoryImpl
 import com.jaumo.dateapp.features.zapping.domain.model.Gender
 import com.jaumo.dateapp.features.zapping.domain.model.User
+import com.jaumo.dateapp.features.zapping.domain.model.toQueryPath
 import com.jaumo.dateapp.util.MainDispatcherCoroutinesTestRule
 import io.mockk.coEvery
 import io.mockk.every
@@ -43,12 +44,13 @@ class UserRepositoryImplTest {
         // given
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         val repository = createUserRepository(testDispatcher)
+        val gender = Gender.MALE
         coEvery {
-            userApi.getUser()
+            userApi.getUser(gender.toQueryPath())
         } returns UserGenerator.generateUserResponseDTO()
 
         // when
-        val userResponse = repository.getUser().toList()
+        val userResponse = repository.getUser(gender).toList()
         val firstItem = userResponse.first()
 
         // then
@@ -60,15 +62,17 @@ class UserRepositoryImplTest {
         // given
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         val repository = createUserRepository(testDispatcher)
+        val gender = Gender.MALE
+
         coEvery {
-            userApi.getUser()
+            userApi.getUser(gender.toQueryPath())
         } throws IOException()
         every {
             analytics.logError()
         } returns Unit
 
         // when
-        val userResponse = repository.getUser().toList()
+        val userResponse = repository.getUser(gender).toList()
         val error = userResponse[1]
 
         // then
@@ -83,9 +87,10 @@ class UserRepositoryImplTest {
     fun `when http error happens then the response has an unknown error`() = runTest {
         // given
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        val filteredGender = Gender.BOTH
         val repository = createUserRepository(testDispatcher)
         coEvery {
-            userApi.getUser()
+            userApi.getUser(filteredGender.toQueryPath())
         } throws HttpException(
             retrofit2.Response.error<ResponseBody>(
                 500,
@@ -97,7 +102,7 @@ class UserRepositoryImplTest {
         } returns Unit
 
         // when
-        val userResponse = repository.getUser().toList()
+        val userResponse = repository.getUser(filteredGender).toList()
         val error = userResponse[1]
 
         // then
@@ -113,8 +118,9 @@ class UserRepositoryImplTest {
         // given
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         val repository = createUserRepository(testDispatcher)
+        val gender = Gender.FEMALE
         coEvery {
-            userApi.getUser()
+            userApi.getUser(gender.toQueryPath())
         } returns UserGenerator.generateUserResponseDTO()
         val expectedUser = User(
             lastName = "Nichols",
@@ -125,7 +131,7 @@ class UserRepositoryImplTest {
         )
 
         // when
-        val userResponse = repository.getUser().toList()
+        val userResponse = repository.getUser(gender).toList()
         val user = userResponse[1]
 
         // then

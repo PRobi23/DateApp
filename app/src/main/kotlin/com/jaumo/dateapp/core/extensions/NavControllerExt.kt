@@ -9,3 +9,15 @@ import com.jaumo.dateapp.core.util.UiEvent
 fun NavController.navigate(event: UiEvent.Navigate) {
     this.navigate(event.route)
 }
+
+/***
+ * Helper function for navigating up
+ */
+fun NavController.navigateUpWithCheck(): Boolean {
+    return if (this.previousBackStackEntry != null) {
+        this.navigateUp()
+        true
+    } else {
+        false
+    }
+}

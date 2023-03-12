@@ -1,12 +1,14 @@
 package com.jaumo.dateapp.features.zapping.presentation.component
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -14,26 +16,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import coil.transform.RoundedCornersTransformation
 import com.jaumo.dateapp.R
 import com.jaumo.dateapp.core.extensions.debugPlaceholderForImage
+import com.jaumo.dateapp.core.navigation.Route
+import com.jaumo.dateapp.core.util.UiEvent
 import com.jaumo.dateapp.features.zapping.domain.model.Gender
 import com.jaumo.dateapp.features.zapping.domain.model.User
 import com.jaumo.dateapp.ui.theme.CardBackGround
 
 @Composable
-internal fun ZappingCard(modifier: Modifier, user: User, getNewUser: () -> Unit) {
+internal fun ZappingCard(
+    modifier: Modifier,
+    user: User,
+    getNewUser: () -> Unit,
+    onNavigate: (UiEvent.Navigate) -> Unit
+) {
     val openDialog = remember { mutableStateOf(false) }
 
     Card(
@@ -53,6 +60,18 @@ internal fun ZappingCard(modifier: Modifier, user: User, getNewUser: () -> Unit)
             ) {
                 val imageHeightDp = 350
                 val imageWidthDp = 250
+
+                Image(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .clickable {
+                            onNavigate(UiEvent.Navigate(Route.FILTER))
+                        },
+                    painter = painterResource(id = R.drawable.filter_ic),
+                    contentDescription = stringResource(
+                        id = R.string.filter_content_description
+                    )
+                )
 
                 Card(
                     modifier = Modifier
@@ -86,7 +105,7 @@ internal fun ZappingCard(modifier: Modifier, user: User, getNewUser: () -> Unit)
                             .align(Alignment.CenterHorizontally)
                             .requiredHeight(imageHeightDp.dp)
                             .requiredWidth(imageWidthDp.dp),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.FillBounds
                     )
                 }
             }
@@ -172,6 +191,7 @@ private fun PreviewZappingCard() {
             thumbnail = "https://randomuser.me/api/portraits/thumb/men/75.jpg",
             gender = Gender.FEMALE
         ),
-        getNewUser = {}
+        getNewUser = {},
+        onNavigate = { UiEvent.Navigate(Route.FILTER) }
     )
 }

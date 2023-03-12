@@ -5,6 +5,10 @@ import com.google.common.truth.Truth
 import com.jaumo.dateapp.UserGenerator
 import com.jaumo.dateapp.core.util.ErrorType
 import com.jaumo.dateapp.core.util.Response
+import com.jaumo.dateapp.features.filter.domain.model.Filter
+import com.jaumo.dateapp.features.filter.domain.repository.FilterRepository
+import com.jaumo.dateapp.features.filter.domain.usecase.GetSavedFilterUseCase
+import com.jaumo.dateapp.features.zapping.domain.model.Gender
 import com.jaumo.dateapp.features.zapping.domain.model.User
 import com.jaumo.dateapp.features.zapping.domain.repository.UserRepository
 import com.jaumo.dateapp.features.zapping.domain.usecase.GetUserUseCase
@@ -21,18 +25,26 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class ZappingViewModelImplTest {
     private val userRepository: UserRepository = mockk()
+    private val filterRepository: FilterRepository = mockk()
 
     @get:Rule
     var coroutinesTestRule = MainDispatcherCoroutinesTestRule()
 
-    private fun createViewModel() = ZappingViewModelImpl(GetUserUseCase(userRepository))
+    private fun createViewModel() = ZappingViewModelImpl(
+        GetUserUseCase(userRepository),
+        GetSavedFilterUseCase(filterRepository)
+    )
 
     @Test
-    fun `when repository call of getDogBreeds tells that there is a network error the state is set to state`() =
+    fun `when repository call of getUser tells that there is a network error the state is set to state`() =
         runTest {
             // given
+            val savedGender = Gender.BOTH
             every {
-                userRepository.getUser()
+                filterRepository.getFilter()
+            } returns flowOf(Response.Success(Filter(gender = savedGender)))
+            every {
+                userRepository.getUser(savedGender)
             } returns flowOf(
                 Response.Error<User>(errorType = ErrorType.NETWORK_ERROR)
             )
@@ -53,8 +65,12 @@ class ZappingViewModelImplTest {
     @Test
     fun `when error happened in the use case the error is set to the state`() = runTest {
         // given
+        val savedGender = Gender.FEMALE
         every {
-            userRepository.getUser()
+            filterRepository.getFilter()
+        } returns flowOf(Response.Success(Filter(gender = savedGender)))
+        every {
+            userRepository.getUser(savedGender)
         } returns flowOf(
             Response.Error<User>(errorType = ErrorType.UNKNOWN_ERROR)
         )
@@ -77,8 +93,12 @@ class ZappingViewModelImplTest {
         runTest {
             // given
             val generatedUser = UserGenerator.generateUser()
+            val savedGender = Gender.MALE
             every {
-                userRepository.getUser()
+                filterRepository.getFilter()
+            } returns flowOf(Response.Success(Filter(gender = savedGender)))
+            every {
+                userRepository.getUser(savedGender)
             } returns flowOf(
                 Response.Success(generatedUser)
             )

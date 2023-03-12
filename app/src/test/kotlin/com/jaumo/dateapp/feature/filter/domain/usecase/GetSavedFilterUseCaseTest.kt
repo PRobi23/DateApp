@@ -1,13 +1,14 @@
-package com.jaumo.dateapp.feature.zapping.domain.usecase
+package com.jaumo.dateapp.feature.filter.domain.usecase
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth
 import com.jaumo.dateapp.UserGenerator
 import com.jaumo.dateapp.core.util.ErrorType
 import com.jaumo.dateapp.core.util.Response
+import com.jaumo.dateapp.features.filter.domain.model.Filter
+import com.jaumo.dateapp.features.filter.domain.repository.FilterRepository
+import com.jaumo.dateapp.features.filter.domain.usecase.GetSavedFilterUseCase
 import com.jaumo.dateapp.features.zapping.domain.model.Gender
-import com.jaumo.dateapp.features.zapping.domain.repository.UserRepository
-import com.jaumo.dateapp.features.zapping.domain.usecase.GetUserUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,24 +18,22 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetUserUseCaseTest {
+class GetSavedFilterUseCaseTest {
 
-    private val userRepository: UserRepository = mockk()
-    private fun getUserUseCase() = GetUserUseCase(userRepository)
+    private val filterRepository: FilterRepository = mockk()
+    private fun getSavedFilterUseCase() = GetSavedFilterUseCase(filterRepository)
 
     @Test
     fun `when the repository call fails the error is propagated through the use case`() =
         runTest {
             // given
-            val useCase = getUserUseCase()
-            val gender = Gender.MALE
-
+            val useCase = getSavedFilterUseCase()
             coEvery {
-                userRepository.getUser(gender)
+                filterRepository.getFilter()
             } returns flowOf(Response.Error(ErrorType.UNKNOWN_ERROR))
 
             // when
-            val response = useCase(gender)
+            val response = useCase()
 
             // then
             Truth.assertThat(response.first()).isInstanceOf(Response.Error::class.java)
@@ -49,22 +48,20 @@ class GetUserUseCaseTest {
     fun `when the repository call succeeds the elements are propagated through the use case`() =
         runTest {
             // given
-            val useCase = getUserUseCase()
-            val user = UserGenerator.generateUser()
-            val gender = Gender.BOTH
-
+            val useCase = getSavedFilterUseCase()
+            val filter = Filter(gender = Gender.BOTH)
             coEvery {
-                userRepository.getUser(gender)
-            } returns flowOf(Response.Success(user))
+                filterRepository.getFilter()
+            } returns flowOf(Response.Success(filter))
 
             // when
-            val response = useCase(gender)
+            val response = useCase()
 
             // then
             Truth.assertThat(response.first()).isInstanceOf(Response.Success::class.java)
             response.test {
-                val userItem = awaitItem()
-                Truth.assertThat(userItem.data).isEqualTo(user)
+                val filterItem = awaitItem()
+                Truth.assertThat(filterItem.data).isEqualTo(filter)
                 cancelAndIgnoreRemainingEvents()
             }
         }

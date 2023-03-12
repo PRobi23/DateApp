@@ -5,7 +5,9 @@ import com.jaumo.dateapp.core.di.DefaultDispatcher
 import com.jaumo.dateapp.core.util.ErrorType
 import com.jaumo.dateapp.core.util.Response
 import com.jaumo.dateapp.features.zapping.data.remote.UserApi
+import com.jaumo.dateapp.features.zapping.domain.model.Gender
 import com.jaumo.dateapp.features.zapping.domain.model.User
+import com.jaumo.dateapp.features.zapping.domain.model.toQueryPath
 import com.jaumo.dateapp.features.zapping.domain.repository.UserRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -27,11 +29,11 @@ class UserRepositoryImpl(
     /**
      * {@inheritDoc}
      */
-    override fun getUser(): Flow<Response<User>> = flow {
+    override fun getUser(gender: Gender): Flow<Response<User>> = flow {
         emit(Response.Loading())
 
         try {
-            val userDTO = userApi.getUser()
+            val userDTO = userApi.getUser(gender.toQueryPath())
             val user = userDTO.results.map {
                 it.toUser()
             }.first()

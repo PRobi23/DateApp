@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">DateApp</string>
     <string name="zapping_screen_title">Find your partner</string>
+    <string name="filter_screen_title">Filter</string>
 
     <!--Errors-->
     <string name="network_error">Couldn\'t reach server. Check your internet connection.</string>
@@ -9,4 +10,14 @@
     <!--Custom dialog-->
     <string name="match_text">You have a match.</string>
     <string name="match_description">%1$s likes you too! Go in your list of matches to start a conversation with %2$s</string>
+
+    <string name="filter_content_description">Filter</string>
+    <string name="back_content_description">Back</string>
+
+
+    <string name="filter_description">I\'m looking for</string>
+    <string name="him">Him</string>
+    <string name="her">Her</string>
+    <string name="unknown_gender">Unknown gender</string>
+
 </resources>

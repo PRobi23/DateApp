@@ -7,7 +7,7 @@ import retrofit2.http.Query
 interface UserApi {
     @GET("api/")
     suspend fun getUser(
-        @Query("gender") gender: String? = "",
+        @Query("gender") gender: String,
     ): UserResultDTO
 
     companion object {

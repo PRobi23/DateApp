@@ -26,7 +26,7 @@ import coil.request.ImageRequest
 import com.jaumo.dateapp.R
 import com.jaumo.dateapp.core.extensions.debugPlaceholderForImage
 import com.jaumo.dateapp.features.zapping.domain.model.Gender
-import com.jaumo.dateapp.features.zapping.domain.model.toProperStringFormat
+import com.jaumo.dateapp.features.zapping.domain.model.getPreposition
 
 @Composable
 internal fun MatchDialog(
@@ -78,7 +78,7 @@ internal fun MatchDialog(
                     text = stringResource(
                         id = R.string.match_description,
                         userName,
-                        gender.toProperStringFormat()
+                        gender.getPreposition().asString()
                     ),
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier
