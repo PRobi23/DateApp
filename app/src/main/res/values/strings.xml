@@ -5,4 +5,8 @@
     <!--Errors-->
     <string name="network_error">Couldn\'t reach server. Check your internet connection.</string>
     <string name="unknown_error">Unknown error.</string>
+
+    <!--Custom dialog-->
+    <string name="match_text">You have a match.</string>
+    <string name="match_description">%1$s likes you too! Go in your list of matches to start a conversation with %2$s</string>
 </resources>

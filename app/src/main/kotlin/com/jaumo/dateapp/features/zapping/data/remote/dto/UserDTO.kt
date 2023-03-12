@@ -1,6 +1,7 @@
 package com.jaumo.dateapp.features.zapping.data.remote.dto
 
 import com.jaumo.dateapp.features.zapping.domain.model.User
+import com.jaumo.dateapp.features.zapping.domain.model.toGender
 
 data class UserDTO(
     val cell: String,
@@ -22,6 +23,8 @@ data class UserDTO(
     fun toUser() = User(
         lastName = name.last,
         age = dob.age,
-        userPicture = picture.large
+        userPicture = picture.large,
+        thumbnail = picture.thumbnail,
+        gender = gender.toGender()
     )
 }

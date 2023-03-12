@@ -21,8 +21,7 @@ class ZappingViewModelImpl @Inject constructor(
     init {
         getUser()
     }
-
-    @TestOnly
+    
     override fun getUser() {
         getUserUseCase()
             .onEach { result ->

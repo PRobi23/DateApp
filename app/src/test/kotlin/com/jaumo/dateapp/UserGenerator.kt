@@ -1,6 +1,7 @@
 package com.jaumo.dateapp
 
 import com.jaumo.dateapp.features.zapping.data.remote.dto.*
+import com.jaumo.dateapp.features.zapping.domain.model.Gender
 import com.jaumo.dateapp.features.zapping.domain.model.User
 import kotlin.random.Random
 
@@ -13,7 +14,9 @@ object UserGenerator {
     fun generateUser() = User(
         lastName = randomWord(),
         age = randomAge(),
-        userPicture = "https://" + randomWord()
+        userPicture = "https://" + randomWord(),
+        thumbnail = "https://" + randomWord(),
+        gender = if (Random.nextBoolean()) Gender.MALE else Gender.FEMALE
     )
 
     fun generateUserResponseDTO() = UserResultDTO(

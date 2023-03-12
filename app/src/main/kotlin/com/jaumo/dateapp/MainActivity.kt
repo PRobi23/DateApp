@@ -13,7 +13,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.jaumo.dateapp.core.extensions.navigate
 import com.jaumo.dateapp.core.navigation.Route
+import com.jaumo.dateapp.core.util.UiEvent
 import com.jaumo.dateapp.features.zapping.presentation.ZappingScreen
 import com.jaumo.dateapp.ui.theme.DateAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,33 +26,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DateAppTheme {
-
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
                     startDestination = Route.ZAPPING
                 ) {
                     composable(Route.ZAPPING) {
-                        ZappingScreen(navController = navController)
+                        ZappingScreen(onNavigate = navController::navigate)
                     }
                     composable(Route.FILTER) {
-                        ZappingScreen(navController = navController)
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    DateAppTheme {
-        Greeting("Android")
     }
 }

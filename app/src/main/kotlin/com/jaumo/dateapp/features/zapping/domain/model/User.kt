@@ -6,5 +6,7 @@ package com.jaumo.dateapp.features.zapping.domain.model
 data class User(
     val userPicture: String,
     val age: Int,
-    val lastName: String
+    val lastName: String,
+    val thumbnail: String,
+    val gender: Gender
 )

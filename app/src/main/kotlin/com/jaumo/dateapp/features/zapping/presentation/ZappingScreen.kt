@@ -1,9 +1,11 @@
 package com.jaumo.dateapp.features.zapping.presentation
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -17,20 +19,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.jaumo.dateapp.R
+import com.jaumo.dateapp.core.navigation.Route
 import com.jaumo.dateapp.core.util.ErrorType
+import com.jaumo.dateapp.core.util.UiEvent
+import com.jaumo.dateapp.features.zapping.domain.model.Gender
 import com.jaumo.dateapp.features.zapping.domain.model.User
 import com.jaumo.dateapp.features.zapping.presentation.component.ZappingCard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.math.abs
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ZappingScreen(
-    navController: NavController,
+    onNavigate: (UiEvent.Navigate) -> Unit,
     viewModel: ZappingViewModel = hiltViewModel<ZappingViewModelImpl>()
 ) {
     val state = viewModel.state.collectAsState().value
@@ -47,6 +49,7 @@ internal fun ZappingScreen(
                 )
             }, actions = {
                 IconButton(onClick = {
+                    onNavigate(UiEvent.Navigate(Route.ZAPPING))
                 }) {
                     Icon(
                         Icons.Default.Info,
@@ -72,6 +75,9 @@ internal fun ZappingScreen(
                                         // left
                                         direction = 1
                                     }
+                                    x > 0 -> {
+                                        direction = 0
+                                    }
                                 }
                             }
                         },
@@ -89,6 +95,7 @@ internal fun ZappingScreen(
                         .fillMaxSize()
                         .background(Color.White),
                     user = userToShow,
+                    getNewUser = viewModel::getUser
                 )
             }
             if (state.error != null) {
@@ -115,7 +122,7 @@ internal fun ZappingScreen(
 @Preview
 @Composable
 private fun ZappingScreenPreview() {
-    ZappingScreen(navController = rememberNavController(),
+    ZappingScreen(onNavigate = { UiEvent.Navigate(Route.ZAPPING) },
         viewModel = object : ZappingViewModel {
 
             override val state: StateFlow<UserState> = MutableStateFlow(
@@ -125,7 +132,9 @@ private fun ZappingScreenPreview() {
                     User(
                         lastName = "Name",
                         age = 25,
-                        userPicture = "https://url.com"
+                        userPicture = "https://url.com",
+                        thumbnail = "https://randomuser.me/api/portraits/thumb/men/75.jpg",
+                        gender = Gender.FEMALE
                     ),
                     error = null
                 )
