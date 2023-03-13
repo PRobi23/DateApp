@@ -21,6 +21,9 @@ class FilterViewModelImpl @Inject constructor(
     private val _state = MutableStateFlow(FilterState())
     override val state: StateFlow<FilterState> = _state.asStateFlow()
 
+    private val _preselectedGender = MutableStateFlow(Gender.BOTH)
+    override val preselectedGender: StateFlow<Gender> = _preselectedGender.asStateFlow()
+
     init {
         getActuallySelectedFilter()
     }
@@ -37,6 +40,7 @@ class FilterViewModelImpl @Inject constructor(
         when (result) {
             is Response.Success -> {
                 _state.value = FilterState(filter = result.data)
+                getActuallySelectedGenderForFilter()
             }
             is Response.Error -> {
                 _state.value = FilterState(
@@ -49,13 +53,15 @@ class FilterViewModelImpl @Inject constructor(
         }
     }
 
-    override fun getActuallySelectedGenderForFilter(): Gender {
-        return _state.value.filter?.let { filter ->
+    @TestOnly
+    fun getActuallySelectedGenderForFilter() {
+        _preselectedGender.value = _state.value.filter?.let { filter ->
             Gender.valueOf(filter.gender.toString())
         } ?: Gender.BOTH
     }
 
     override fun saveSelectedFilter(gender: Gender) {
         savedFilterUseCase(Filter(gender = gender)).launchIn(viewModelScope)
+        _preselectedGender.value = gender
     }
 }

@@ -36,10 +36,9 @@ internal fun FilterScreen(
     navigateUp: () -> Unit
 ) {
     val state = viewModel.state.collectAsState().value
+    val preselectedGender = viewModel.preselectedGender.collectAsState().value.toCamelCase()
 
-    val selectedValue = remember { mutableStateOf(Gender.BOTH.toCamelCase()) }
-    val isSelectedItem: (String) -> Boolean = { selectedValue.value == it }
-    val onChangeState: (String) -> Unit = { selectedValue.value = it }
+    val isSelectedItem: (String) -> Boolean = { preselectedGender == it }
 
     val genders =
         Gender.values()
@@ -94,7 +93,6 @@ internal fun FilterScreen(
                                     .selectable(
                                         selected = isSelectedItem(item),
                                         onClick = {
-                                            onChangeState(item)
                                             viewModel.saveSelectedFilter(Gender.valueOf(item.uppercase()))
                                         },
                                         role = Role.RadioButton
@@ -143,13 +141,9 @@ private fun PreviewFilterScreen() {
             override val state: StateFlow<FilterState> = MutableStateFlow(
                 FilterState(isLoading = false, filter = Filter(gender = Gender.MALE))
             )
-
-            override fun getActuallySelectedGenderForFilter(): Gender {
-                return Gender.FEMALE
-            }
+            override val preselectedGender: StateFlow<Gender> = MutableStateFlow(Gender.MALE)
 
             override fun saveSelectedFilter(gender: Gender) = Unit
-
         }
     )
 

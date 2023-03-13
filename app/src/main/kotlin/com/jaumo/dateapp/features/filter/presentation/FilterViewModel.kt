@@ -14,10 +14,9 @@ interface FilterViewModel {
     val state: StateFlow<FilterState>
 
     /***
-     * Returns the actually selected gender for filtering.
-     * @return Gender
+     * Returns the previously selected gender from database
      */
-    fun getActuallySelectedGenderForFilter(): Gender
+    val preselectedGender: StateFlow<Gender>
 
     /***
      * Save filter selected by user

@@ -12,11 +12,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import com.jaumo.dateapp.R
 import com.jaumo.dateapp.core.navigation.Route
 import com.jaumo.dateapp.core.util.ErrorType
@@ -31,11 +35,29 @@ import kotlin.math.abs
 @Composable
 internal fun ZappingScreen(
     onNavigate: (UiEvent.Navigate) -> Unit,
-    viewModel: ZappingViewModel = hiltViewModel<ZappingViewModelImpl>()
+    viewModel: ZappingViewModel = hiltViewModel<ZappingViewModelImpl>(),
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
 ) {
     val state = viewModel.state.collectAsState().value
     val scaffoldState = rememberScaffoldState()
     var direction by remember { mutableStateOf(-1) }
+
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.getUser()
+            }
+        }
+
+        // Add the observer to the lifecycle
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        // When the effect leaves the Composition, remove the observer
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,

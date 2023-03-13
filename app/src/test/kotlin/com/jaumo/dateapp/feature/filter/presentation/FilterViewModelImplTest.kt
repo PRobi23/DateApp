@@ -82,7 +82,7 @@ class FilterViewModelImplTest {
         }
 
     @Test
-    fun `when getActuallySelectedGenderForFilter is called and the state saved item is male then male gender is returned`() {
+    fun `when gender is set to male previously the preselectedGender is male`() {
         runTest {
             // given
             val savedFilter = Filter(gender = Gender.MALE)
@@ -96,11 +96,10 @@ class FilterViewModelImplTest {
             val viewModel = createViewModel()
 
             // then
-            viewModel.state.test {
+            viewModel.preselectedGender.test {
                 awaitItem()
-                awaitItem()
-
-                Truth.assertThat(viewModel.getActuallySelectedGenderForFilter())
+                val gender = awaitItem()
+                Truth.assertThat(gender)
                     .isEqualTo(Gender.MALE)
 
                 cancelAndIgnoreRemainingEvents()
@@ -109,10 +108,10 @@ class FilterViewModelImplTest {
     }
 
     @Test
-    fun `when getActuallySelectedGenderForFilter is called and the state saved item is female then female gender is returned`() {
+    fun `when gender is set to both previously the preselectedGender is both`() {
         runTest {
             // given
-            val savedFilter = Filter(gender = Gender.MALE)
+            val savedFilter = Filter(gender = Gender.BOTH)
             every {
                 filterRepository.getFilter()
             } returns flowOf(
@@ -123,37 +122,9 @@ class FilterViewModelImplTest {
             val viewModel = createViewModel()
 
             // then
-            viewModel.state.test {
-                awaitItem()
-                awaitItem()
-
-                Truth.assertThat(viewModel.getActuallySelectedGenderForFilter())
-                    .isEqualTo(Gender.MALE)
-
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
-    }
-
-    @Test
-    fun `when getActuallySelectedGenderForFilter is called and the state saved item is not set both gender is returned`() {
-        runTest {
-            // given
-            every {
-                filterRepository.getFilter()
-            } returns flowOf(
-                Response.Loading()
-            )
-
-            // when
-            val viewModel = createViewModel()
-
-            // then
-            viewModel.state.test {
-                awaitItem()
-                awaitItem()
-
-                Truth.assertThat(viewModel.getActuallySelectedGenderForFilter())
+            viewModel.preselectedGender.test {
+                val gender = awaitItem() //BOTH IS THE DEFAULT VALUE
+                Truth.assertThat(gender)
                     .isEqualTo(Gender.BOTH)
 
                 cancelAndIgnoreRemainingEvents()
@@ -162,25 +133,27 @@ class FilterViewModelImplTest {
     }
 
     @Test
-    fun `when saveSelectedFilter is called then it called the set filter function on the repository`() {
-        // given
-        val filterToSave = FilterGenerator.generateFilter()
-        every {
-            filterRepository.getFilter()
-        } returns flowOf(
-            Response.Loading()
-        )
-        every {
-            filterRepository.setFilter(filterToSave)
-        } returns flowOf(Response.Success(Unit))
-        val viewModel = createViewModel()
+    fun `when gender is set to female previously the preselectedGender is female`() =
+        runTest {
+            // given
+            val savedFilter = Filter(gender = Gender.FEMALE)
+            every {
+                filterRepository.getFilter()
+            } returns flowOf(
+                Response.Success(savedFilter)
+            )
 
-        // when
-        viewModel.saveSelectedFilter(filterToSave.gender)
+            // when
+            val viewModel = createViewModel()
 
-        // then
-        verify {
-            filterRepository.setFilter(filterToSave)
+            // then
+            viewModel.preselectedGender.test {
+                awaitItem()
+                val gender = awaitItem()
+                Truth.assertThat(gender)
+                    .isEqualTo(Gender.FEMALE)
+
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 }
